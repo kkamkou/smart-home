@@ -13,15 +13,15 @@ lock = Semaphore(len(config['sensors']))
 api = RestApi(config['api']['url'], config['api']['user'])
 
 
-def job(timeout: int):
+def job(sensor: dict):
     instance = Thread(target=dispatch, args=(sensor, api, lock), daemon=True)
     instance.start()
     lock.acquire()
-    instance.join(timeout=timeout)
+    instance.join(timeout=sensor.get('timeout', 1))
 
 
-for sensor in filter(lambda s: s.get("interval", None) > 0, config['sensors']):
-    schedule.every(sensor['interval']).seconds.do(job, sensor.get('timeout', 1))
+for entry in filter(lambda s: s.get("interval", -1) > 0, config['sensors']):
+    schedule.every(entry['interval']).seconds.do(job, entry)
 
 while True:
     schedule.run_pending()

@@ -20,13 +20,7 @@ def dispatch(sensor, api: RestApi, lock: Semaphore) -> None:
         raise RuntimeError('Unable to find "{}" sensor'.format(sensor['name']))
 
     cls = str(entry['type']).replace("ZHA", "Zha", 1)
-    try:
-        model = getattr(sensors.mappings, cls)(entry)
-    except Exception as a:
-        raise RuntimeError('Unable to map type "{}" because of {}'.format(cls, a))
-    finally:
-        lock.release()
-        db_connection.invalidate()
+    model = getattr(sensors.mappings, cls)(entry)
 
     record = SensorHistory(sensor=model.id(), value=model.value(), timestamp=model.timestamp(), type=model.type())
     if not db_session.query(SensorHistory).filter(SensorHistory.timestamp == record.timestamp).first():
