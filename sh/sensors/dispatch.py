@@ -13,19 +13,20 @@ def dispatch(sensor, api: RestApi, lock: Semaphore) -> None:
     Base.metadata.create_all(db_connection)
 
     log = instance_logging(__name__)
-
     log.info('Thread: %s, %s', current_thread().getName(), sensor)
-    entry = next(filter(lambda e: e['name'] == sensor['name'], api.sensors().values()), None)
-    if not entry:
+
+    entries = filter(lambda e: e['name'] == sensor['name'], api.sensors().values())
+    if not entries:
         raise RuntimeError('Unable to find "{}" sensor'.format(sensor['name']))
 
-    cls = str(entry['type']).replace("ZHA", "Zha", 1)
-    model = getattr(sensors.mappings, cls)(entry)
+    for entry in entries:
+        cls = str(entry['type']).replace("ZHA", "Zha", 1)
+        model = getattr(sensors.mappings, cls)(entry)
 
-    record = SensorHistory(sensor=model.id(), value=model.value(), timestamp=model.timestamp(), type=model.type())
-    if not db_session.query(SensorHistory).filter(SensorHistory.timestamp == record.timestamp).first():
-        db_session.add(record)
-        db_session.commit()
+        record = SensorHistory(sensor=model.id(), value=model.value(), timestamp=model.timestamp(), type=model.type())
+        if not db_session.query(SensorHistory).filter(SensorHistory.timestamp == record.timestamp).first():
+            db_session.add(record)
 
+    db_session.commit()
     db_connection.invalidate()
     lock.release()
