@@ -1,0 +1,13 @@
+development: &dev
+  api:
+    url: http://raspberrypi.local/api
+    user: FFFFFFFFFF
+
+  sensors:
+    - name: example
+      interval: 300
+      timeout: 10
+      database: /tmp/temperature_kids.sqlite3
+
+production:
+  <<: *dev
