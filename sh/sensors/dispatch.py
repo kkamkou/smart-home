@@ -17,6 +17,7 @@ def dispatch(sensor, api: RestApi, lock: Semaphore) -> None:
 
     entries = filter(lambda e: e['name'] == sensor['name'], api.sensors().values())
     if not entries:
+        lock.release()
         raise RuntimeError('Unable to find "{}" sensor'.format(sensor['name']))
 
     for entry in entries:
@@ -24,9 +25,14 @@ def dispatch(sensor, api: RestApi, lock: Semaphore) -> None:
         model = getattr(sensors.mappings, cls)(entry)
 
         record = SensorHistory(sensor=model.id(), value=model.value(), timestamp=model.timestamp(), type=model.type())
-        if not db_session.query(SensorHistory).filter(SensorHistory.timestamp == record.timestamp).first():
+        exists = db_session.query(SensorHistory)\
+            .filter(SensorHistory.timestamp == record.timestamp)\
+            .filter(SensorHistory.sensor == record.sensor).count() > 0
+        if not exists:
             db_session.add(record)
 
-    db_session.commit()
-    db_connection.invalidate()
-    lock.release()
+    try:
+        db_session.commit()
+        db_connection.invalidate()
+    finally:
+        lock.release()
