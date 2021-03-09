@@ -16,11 +16,12 @@ api = RestApi(config['api']['url'], config['api']['user'])
 def job(sensor: dict):
     instance = Thread(target=dispatch, args=(sensor, api, lock), daemon=True)
     instance.start()
-    lock.acquire()
-    instance.join(timeout=sensor.get('timeout', 1))
+
+    if not lock.acquire(timeout=10):
+        raise RuntimeError('Unable to acquire a new lock')
 
 
-for entry in filter(lambda s: s.get("interval", -1) > 0, config['sensors']):
+for entry in filter(lambda s: s.get('interval', -1) > 0, config['sensors']):
     schedule.every(entry['interval']).seconds.do(job, entry)
 
 while True:
