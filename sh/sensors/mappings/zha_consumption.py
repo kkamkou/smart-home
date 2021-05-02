@@ -4,7 +4,7 @@ from typing import Any
 from .sensor_interface import SensorInterface
 
 
-class ZhaHumidity(SensorInterface):
+class ZhaConsumption(SensorInterface):
     __obj = {}
 
     def __new__(cls, obj: dict) -> Any:
