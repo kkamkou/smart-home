@@ -1,4 +1,4 @@
-influxdb-client[ciso]
+influxdb
 requests
 schedule
 pyyaml

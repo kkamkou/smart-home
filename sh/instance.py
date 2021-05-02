@@ -2,7 +2,7 @@ import logging
 from argparse import ArgumentParser, Namespace
 
 import yaml
-from influxdb_client import InfluxDBClient
+from influxdb import InfluxDBClient
 
 logging.basicConfig(level=logging.INFO)
 
