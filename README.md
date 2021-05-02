@@ -4,6 +4,10 @@ Smart Home
 ## Concepts
 
 
+## Buckets
+- sensors
+
 ## Comments
-- telegraf
-- grafana
+- Telegraf
+- Grafana
+- InfluxDB

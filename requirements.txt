@@ -1,4 +1,4 @@
-sqlalchemy
+influxdb-client[ciso]
 requests
 schedule
 pyyaml
