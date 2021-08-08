@@ -24,6 +24,9 @@ def instance_db(config) -> InfluxDBClient:
 
 def args() -> Namespace:
     parser = ArgumentParser()
-    parser.add_argument('--environment', metavar='environment', type=str, choices=['development', 'production'])
+    parser.add_argument(
+        '--environment', metavar='environment', type=str, choices=['development', 'production'],
+        default='development'
+    )
     parser.add_argument('--config', metavar='PATH', type=str)
     return parser.parse_args()
