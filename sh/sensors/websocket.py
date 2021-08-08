@@ -44,7 +44,7 @@ async def persist(payload):
         'measurement': payload['r'],
         "tags": {'sensor': payload['uniqueid']},
         'time': last_updated,
-        'fields': payload['state']
+        'fields': dict(filter(lambda v: not isinstance(v[1], list), payload['state'].items()))
     }])
 
 
