@@ -38,10 +38,12 @@ async def process(ws):
 
 
 async def persist(payload):
+    last_updated = datetime.fromisoformat(payload['state']['lastupdated']) if 'lastupdated' in payload['state']\
+        else datetime.now()
     db.write_points([{
         'measurement': payload['r'],
         "tags": {'sensor': payload['uniqueid']},
-        'time': datetime.fromisoformat(payload['state']['lastupdated']),
+        'time': last_updated,
         'fields': payload['state']
     }])
 
