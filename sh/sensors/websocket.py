@@ -9,7 +9,7 @@ from instance import args, instance_config, instance_logging, instance_db
 
 args = args()
 config = instance_config(getattr(args, 'config'), getattr(args, 'environment'))
-log = instance_logging(__name__, 10)
+log = instance_logging(__name__)
 db = instance_db(config['influxdb'])
 
 
@@ -28,7 +28,7 @@ async def process(ws):
     create_task(persist(payload))
 
     for listener in filter(
-        lambda x: x['device'] is None or x['device'] == payload['uniqueid'],
+        lambda x: 'device' not in x or x['device'] == payload['uniqueid'],
         config['listeners']
     ):
         for trigger in filter(lambda x: x['state'].items() & payload['state'].items(), listener['triggers']):
@@ -38,7 +38,7 @@ async def process(ws):
 
 
 async def persist(payload):
-    last_updated = datetime.fromisoformat(payload['state']['lastupdated']) if 'lastupdated' in payload['state']\
+    last_updated = datetime.fromisoformat(payload['state']['lastupdated']) if 'lastupdated' in payload['state'] \
         else datetime.now()
     db.write_points([{
         'measurement': payload['r'],
@@ -60,11 +60,18 @@ async def run(cmd):
         log.warning(msg)
 
 
-async def main():
-    async with websockets.connect('ws://192.168.2.126:443') as websocket:
-        while True:
-            await process(websocket)
-            await sleep(0.1)
+async def connect():
+    log.info(f"Connecting to {config['websockets']['uri']}...")
+    async with websockets.connect(config['websockets']['uri']) as websocket:
+        try:
+            while True:
+                await process(websocket)
+                await sleep(0.1)
+        except Exception as e:
+            log.error(e)
+            create_task(websocket.close())
+            await sleep(5)
+            await connect()
 
 
-asyncio.get_event_loop().run_until_complete(main())
+asyncio.get_event_loop().run_until_complete(connect())
