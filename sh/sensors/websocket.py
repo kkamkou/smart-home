@@ -9,7 +9,7 @@ from instance import args, instance_config, instance_logging, instance_db
 
 args = args()
 config = instance_config(getattr(args, 'config'), getattr(args, 'environment'))
-log = instance_logging(__name__)
+log = instance_logging(__name__, 10)
 db = instance_db(config['influxdb'])
 
 

@@ -1,15 +1,16 @@
 development: &dev
   influxdb:
-    url: http://localhost:8086
-    token: my-token
-    org: my-org
+    host: localhost
+    port: 8086
+    username: uname
+    password: pwd
 
   api:
     url: http://raspberrypi.local/api
     user: FFFFFFFFFF
 
   websockets:
-    uri: ws://192.168.2.126:443
+    uri: ws://raspberrypi.local:443
 
   listeners:
     - device: 00:00:00:00:00:00:00:12-23-5678

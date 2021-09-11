@@ -7,7 +7,7 @@ from influxdb import InfluxDBClient
 logging.basicConfig(level=logging.INFO)
 
 
-def instance_logging(name: str, level: int = logging.INFO) -> logging.Logger:
+def instance_logging(name: str, level: int = logging.NOTSET) -> logging.Logger:
     instance = logging.getLogger(name)
     instance.setLevel(level)
     return instance
