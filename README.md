@@ -17,3 +17,6 @@ Smart Home
 - Telegraf
 - Grafana
 - InfluxDB
+
+### Links
+- https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices
