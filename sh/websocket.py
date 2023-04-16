@@ -17,6 +17,10 @@ db = instance_db(config['influxdb'])
 log = instance_logging(__name__, 10)
 
 
+def filtered_state_items(state: dict):
+    return filter(lambda v: not isinstance(v[1], list), state.items())
+
+
 async def process(ws):
     payload = json.loads(await ws.recv())
     if payload['t'] != 'event':
@@ -35,7 +39,10 @@ async def process(ws):
         lambda x: 'device' not in x or x['device'] == payload['uniqueid'],
         config['websockets']['listeners']
     ):
-        for trigger in filter(lambda x: x['state'].items() & payload['state'].items(), listener['triggers']):
+        for trigger in listener['triggers']:
+            if not trigger['state'].items() & filtered_state_items(payload['state']):
+                continue
+
             if 'disabled' in trigger and trigger['disabled']:
                 continue
 
@@ -54,7 +61,7 @@ async def persist(payload):
         'measurement': payload['r'],
         'tags': {'sensor': payload['uniqueid']},
         'time': last_updated,
-        'fields': dict(filter(lambda v: not isinstance(v[1], list), payload['state'].items()))
+        'fields': dict(filtered_state_items(payload['state']))
     }])
 
 
