@@ -15,7 +15,7 @@ class DaytimeScene(AbstractScene):
         }
 
         hour = datetime.now().hour
-        if hour >= 1:
+        if hour >= 0:
             state.update({'bri': 10, 'ct': 370})
         if hour >= 7:
             state.update({'bri': 150, 'ct': 153})
