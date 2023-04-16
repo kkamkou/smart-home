@@ -40,7 +40,7 @@ async def process(ws):
         config['websockets']['listeners']
     ):
         for trigger in listener['triggers']:
-            if not trigger['state'].items() & filtered_state_items(payload['state']):
+            if not (trigger['state'].items() & filtered_state_items(payload['state'])):
                 continue
 
             if 'disabled' in trigger and trigger['disabled']:
