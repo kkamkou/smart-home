@@ -12,20 +12,24 @@ development: &dev
   websockets:
     uri: ws://raspberrypi.local:443
 
-  listeners:
-    - device: 00:00:00:00:00:00:00:12-23-5678
-      triggers:
-        - type: script
-          state:
-            buttonevent: 1002
-          params:
-            path: bash /opt/do_something.sh
+    listeners:
+      - device: 00:00:00:00:00:00:00:12-23-5678
+        triggers:
+          - type: script
+            disabled: True
+            state:
+              buttonevent: 1002
+            params:
+              path: bash /opt/do_something.sh
 
-  sensors:
-    - name: example
-      interval: 300
-      timeout: 10
-      database: /tmp/temperature_kids.sqlite3
+    - device: 11:00:00:00:00:00:00:12-23-5678
+      triggers:
+        - type: scene
+          name: party
+          state:
+            'on': True
+          params:
+            type: new_year
 
 production:
   <<: *dev

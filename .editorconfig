@@ -11,5 +11,5 @@ charset = utf-8
 [*.py]
 max_line_length = 120
 
-[*.yml]
+[*.yml{,.distr}]
 indent_size = 2
