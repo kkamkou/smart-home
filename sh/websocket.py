@@ -48,7 +48,6 @@ async def process(ws):
 
 
 async def persist(payload):
-    return
     last_updated = datetime.fromisoformat(payload['state']['lastupdated']) if 'lastupdated' in payload['state'] \
         else datetime.now()
     db.write_points([{
@@ -92,8 +91,8 @@ async def connect():
         try:
             while True:
                 await asyncio.gather(process(websocket), sleep(0.1))
-        except Exception as e:
-            log.error(e)
+        except Exception:
+            log.exception('Exception during execution')
             await asyncio.gather(websocket.close(), sleep(5), connect())
 
 asyncio.new_event_loop().run_until_complete(connect())
