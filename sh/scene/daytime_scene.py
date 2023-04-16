@@ -8,7 +8,11 @@ log = instance_logging(__name__, 10)
 
 class DaytimeScene(AbstractScene):
     def run(self):
-        state = {'bri': 200, 'ct': 499, 'transitiontime': 6}
+        state = {
+            'bri': self.params.get('default_bri', 200),
+            'ct': self.params.get('default_ct', 499),
+            'transitiontime': self.params.get('default_transitiontime', 9)
+        }
 
         hour = datetime.now().hour
         if hour >= 1:
