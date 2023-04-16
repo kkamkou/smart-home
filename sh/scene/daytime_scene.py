@@ -30,4 +30,4 @@ class DaytimeScene(AbstractScene):
 
         result = self._api().lights_state(self.event['id'], state)
 
-        log.info(f'Hour: {hour}; Applied: {state}; Result: {result}')
+        log.info(f'Hour: {hour}; Applied: {state}; Result: {tuple(result)}')
